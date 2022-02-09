@@ -1,0 +1,19 @@
+Term =
+    {Send}
+        channel:Integer
+        message:Integer
+        then:Term |
+    {Recieve}
+        channel:Integer
+        binder:Integer
+        then:Term |
+    {Recieve}
+        channel:Integer
+        scope:Term |
+    {Repeat}
+        scope:Term |
+    {Parallel}
+        lhs:Term
+        rhs:Term |
+    {Inact}
+        Void ;

@@ -1,0 +1,9 @@
+.gradle
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+**/build/
+.idea/
+/shelf/
+/workspace.xml
