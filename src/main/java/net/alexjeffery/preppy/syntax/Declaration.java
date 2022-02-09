@@ -1,5 +1,6 @@
 package net.alexjeffery.preppy.syntax;
 
+import net.alexjeffery.preppy.syntax.visitor.DeclarationVisitor;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
@@ -34,5 +35,10 @@ public class Declaration implements Syntax {
     @NotNull
     public Statement getBody() {
         return body;
+    }
+
+    @NotNull
+    public <I, O, E extends Throwable> O accept(@NotNull DeclarationVisitor<I, O, E> visitor, @NotNull I input) throws E {
+        return visitor.visit(this, input);
     }
 }

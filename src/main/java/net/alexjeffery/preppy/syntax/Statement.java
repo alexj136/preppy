@@ -1,10 +1,14 @@
 package net.alexjeffery.preppy.syntax;
 
+import net.alexjeffery.preppy.syntax.visitor.StatementVisitor;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 
 public interface Statement extends Syntax {
+
+    @NotNull
+    public <I, O, E extends Throwable> O accept(@NotNull StatementVisitor<I, O, E> visitor, @NotNull I input) throws E;
 
     public static class Block implements Statement {
 
@@ -18,6 +22,12 @@ public interface Statement extends Syntax {
         @NotNull
         public List<Statement> getStatements() {
             return statements;
+        }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull StatementVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
         }
     }
 
@@ -43,6 +53,12 @@ public interface Statement extends Syntax {
         public Expression getValue() {
             return value;
         }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull StatementVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
+        }
     }
 
     public static class While implements Statement {
@@ -67,6 +83,12 @@ public interface Statement extends Syntax {
         public Statement getBody() {
             return body;
         }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull StatementVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
+        }
     }
 
     public static class Return implements Statement {
@@ -81,6 +103,12 @@ public interface Statement extends Syntax {
         @NotNull
         public Expression getValue() {
             return value;
+        }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull StatementVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
         }
     }
 
@@ -114,6 +142,12 @@ public interface Statement extends Syntax {
         @NotNull
         public Statement getFalseBranch() {
             return falseBranch;
+        }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull StatementVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
         }
     }
 }

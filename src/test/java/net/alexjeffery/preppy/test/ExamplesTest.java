@@ -5,7 +5,6 @@ import net.alexjeffery.preppy.parser.PreppyParser;
 import net.alexjeffery.preppy.syntax.Declaration;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -23,8 +22,9 @@ public class ExamplesTest {
         File directory = new File(directoryName);
         for(File file : directory.listFiles()) {
             if (file.isDirectory())
-                continue;
-            asts.put(file.getName(), getAstFromFile(file.getPath()));
+                asts.putAll(getAstsFromDirectory(file.getName()));
+            else
+                asts.put(file.getName(), getAstFromFile(file.getPath()));
         }
         return asts;
     }
@@ -34,7 +34,10 @@ public class ExamplesTest {
         PreppyLexer lexer = new PreppyLexer(new ANTLRFileStream(fileName));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PreppyParser parser = new PreppyParser(tokens);
-        return parser.declarations().out;
+        List<Declaration> decls = parser.declarations().out;
+        if (decls == null)
+            throw new IOException("parser returned null");
+        return decls;
     }
 
     @Test

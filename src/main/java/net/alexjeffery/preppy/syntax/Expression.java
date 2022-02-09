@@ -1,10 +1,14 @@
 package net.alexjeffery.preppy.syntax;
 
+import net.alexjeffery.preppy.syntax.visitor.ExpressionVisitor;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 
 public interface Expression extends Syntax {
+
+    @NotNull
+    public <I, O, E extends Throwable> O accept(@NotNull ExpressionVisitor<I, O, E> visitor, @NotNull I input) throws E;
 
     public static class IntLiteral implements Expression {
 
@@ -16,6 +20,12 @@ public interface Expression extends Syntax {
 
         public int getValue() {
             return value;
+        }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull ExpressionVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
         }
     }
 
@@ -31,6 +41,12 @@ public interface Expression extends Syntax {
         @NotNull
         public String getName() {
             return name;
+        }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull ExpressionVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
         }
     }
 
@@ -76,6 +92,12 @@ public interface Expression extends Syntax {
         public Type getType() {
             return type;
         }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull ExpressionVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
+        }
     }
 
     public static class Call implements Expression {
@@ -99,6 +121,12 @@ public interface Expression extends Syntax {
         @NotNull
         public List<Expression> getArguments() {
             return arguments;
+        }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull ExpressionVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
         }
     }
 }
