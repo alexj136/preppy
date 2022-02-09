@@ -26,3 +26,7 @@ generateGrammarSource {
     arguments += ['-package', 'net.alexjeffery.preppy.parser']
     arguments += ['-visitor' ]
 }
+
+test {
+    useJUnitPlatform()
+}

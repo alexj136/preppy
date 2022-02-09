@@ -16,6 +16,11 @@ declaration returns [Declaration out]
     ;
 
 params returns [List<String> out]
+    : /* empty */ { $out = new ArrayList<>(); }
+    | params_ne { $out = $params_ne.out; }
+    ;
+
+params_ne returns [List<String> out]
     : KwInt Ident ',' params { $out = $params.out; $out.add(0, $Ident.text); }
     | KwInt Ident { $out = new ArrayList<>(); $out.add($Ident.text); }
     ;
@@ -25,6 +30,7 @@ statement returns [Statement out]
     | Ident '=' expression { $out = new Statement.Assignment($Ident.text, $expression.out); }
     | KwWhile '(' expression ')' statement { $out = new Statement.While($expression.out, $statement.out); }
     | KwReturn expression { $out = new Statement.Return($expression.out); }
+    | KwIf '(' expression ')' t=statement KwElse f=statement { $out = new Statement.Cond($expression.out, $t.out, $f.out); }
     ;
 
 statements returns [List<Statement> out]
@@ -40,6 +46,11 @@ expression returns [Expression out]
     ;
 
 args returns [List<Expression> out]
+    : /* empty */ { $out = new ArrayList<>(); }
+    | args_ne { $out = $args_ne.out; }
+    ;
+
+args_ne returns [List<Expression> out]
     : expression ',' args { $out = $args.out; $out.add(0, $expression.out); }
     | expression { $out = new ArrayList<>(); $out.add($expression.out); }
     ;
@@ -50,8 +61,11 @@ binop returns [Expression.BinOp.Type out]
     | '*' { $out = Expression.BinOp.Type.MUL; }
     | '/' { $out = Expression.BinOp.Type.DIV; }
     | '%' { $out = Expression.BinOp.Type.MOD; }
+    | '==' { $out = Expression.BinOp.Type.EQ; }
     ;
 
+KwIf : 'if';
+KwElse : 'else';
 KwInt : 'int' ;
 KwWhile : 'while' ;
 KwReturn : 'return' ;

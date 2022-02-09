@@ -83,4 +83,37 @@ public interface Statement extends Syntax {
             return value;
         }
     }
+
+    public static class Cond implements Statement {
+
+        @NotNull
+        private Expression condition;
+
+        @NotNull
+        private Statement trueBranch;
+
+        @NotNull
+        private Statement falseBranch;
+
+        public Cond(@NotNull Expression condition, @NotNull Statement trueBranch, @NotNull Statement falseBranch) {
+            this.condition = condition;
+            this.trueBranch = trueBranch;
+            this.falseBranch = falseBranch;
+        }
+
+        @NotNull
+        public Expression getCondition() {
+            return condition;
+        }
+
+        @NotNull
+        public Statement getTrueBranch() {
+            return trueBranch;
+        }
+
+        @NotNull
+        public Statement getFalseBranch() {
+            return falseBranch;
+        }
+    }
 }
