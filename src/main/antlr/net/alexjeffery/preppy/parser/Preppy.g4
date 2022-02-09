@@ -12,11 +12,11 @@ declarations returns [List<Declaration> out]
     ;
 
 declaration returns [Declaration out]
-    : KwInt Ident '(' args ')' statement { $out = new Declaration($Ident.text, $args.out, $statement.out); }
+    : KwInt Ident '(' params ')' statement { $out = new Declaration($Ident.text, $params.out, $statement.out); }
     ;
 
-args returns [List<String> out]
-    : KwInt Ident ',' args { $out = $args.out; $out.add(0, $Ident.text); }
+params returns [List<String> out]
+    : KwInt Ident ',' params { $out = $params.out; $out.add(0, $Ident.text); }
     | KwInt Ident { $out = new ArrayList<>(); $out.add($Ident.text); }
     ;
 
@@ -33,8 +33,15 @@ statements returns [List<Statement> out]
     ;
 
 expression returns [Expression out]
-    : Ident { $out = new Expression.Variable($Ident.text); }
+    : Digit { $out = new Expression.IntLiteral(Integer.parseInt($Digit.text)); }
+    | Ident { $out = new Expression.Variable($Ident.text); }
     | l=expression binop r=expression { $out = new Expression.BinOp($l.out, $r.out, $binop.out); }
+    | Ident '(' args ')' { $out = new Expression.Call($Ident.text, $args.out); }
+    ;
+
+args returns [List<Expression> out]
+    : expression ',' args { $out = $args.out; $out.add(0, $expression.out); }
+    | expression { $out = new ArrayList<>(); $out.add($expression.out); }
     ;
 
 binop returns [Expression.BinOp.Type out]

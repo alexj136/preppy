@@ -2,6 +2,8 @@ package net.alexjeffery.preppy.syntax;
 
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.List;
+
 public interface Expression extends Syntax {
 
     public static class IntLiteral implements Expression {
@@ -73,6 +75,30 @@ public interface Expression extends Syntax {
         @NotNull
         public Type getType() {
             return type;
+        }
+    }
+
+    public static class Call implements Expression {
+
+        @NotNull
+        public String name;
+
+        @NotNull
+        public List<Expression> arguments;
+
+        public Call(@NotNull String name, @NotNull List<Expression> arguments) {
+            this.name = name;
+            this.arguments = arguments;
+        }
+
+        @NotNull
+        public String getName() {
+            return name;
+        }
+
+        @NotNull
+        public List<Expression> getArguments() {
+            return arguments;
         }
     }
 }

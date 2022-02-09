@@ -10,14 +10,29 @@ public class Declaration implements Syntax {
     private String name;
 
     @NotNull
-    private List<String> argumentNames;
+    private List<String> parameterNames;
 
     @NotNull
     private Statement body;
 
-    public Declaration(@NotNull String name, @NotNull List<String> argumentNames, @NotNull Statement body) {
+    public Declaration(@NotNull String name, @NotNull List<String> parameterNames, @NotNull Statement body) {
         this.name = name;
-        this.argumentNames = argumentNames;
+        this.parameterNames = parameterNames;
         this.body = body;
+    }
+
+    @NotNull
+    public String getName() {
+        return name;
+    }
+
+    @NotNull
+    public List<String> getParameterNames() {
+        return parameterNames;
+    }
+
+    @NotNull
+    public Statement getBody() {
+        return body;
     }
 }
