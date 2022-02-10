@@ -60,7 +60,7 @@ public interface Expression extends Syntax {
             EQ, LESS, GREATER, LESS_EQ, GREATER_EQ, NEQ,
 
             // Boolean
-            AND, OR, NOT
+            AND, OR
         }
 
         @NotNull
@@ -91,6 +91,40 @@ public interface Expression extends Syntax {
         @NotNull
         public Type getType() {
             return type;
+        }
+
+        @Override
+        @NotNull
+        public <I, O, E extends Throwable> O accept(@NotNull ExpressionVisitor<I, O, E> visitor, @NotNull I input) throws E {
+            return visitor.visit(this, input);
+        }
+    }
+
+    public static class UnOp implements Expression {
+
+        public static enum Type {
+            NOT
+        }
+
+        @NotNull
+        private Type type;
+
+        @NotNull
+        private Expression argument;
+
+        public UnOp(@NotNull Type type, @NotNull Expression argument) {
+            this.type = type;
+            this.argument = argument;
+        }
+
+        @NotNull
+        public Type getType() {
+            return type;
+        }
+
+        @NotNull
+        public Expression getArgument() {
+            return argument;
         }
 
         @Override

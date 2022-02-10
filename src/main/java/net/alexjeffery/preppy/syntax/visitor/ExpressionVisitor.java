@@ -18,5 +18,8 @@ public interface ExpressionVisitor<I, O, E extends Throwable> {
     public O visit(@NotNull Expression.BinOp binOp, @NotNull I input) throws E;
 
     @NotNull
+    public O visit(@NotNull Expression.UnOp unOp, @NotNull I input) throws E;
+
+    @NotNull
     public O visit(@NotNull Expression.Call call, @NotNull I input) throws E;
 }
