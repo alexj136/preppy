@@ -10,6 +10,8 @@ public interface Expression extends Syntax {
     @NotNull
     public <I, O, E extends Throwable> O accept(@NotNull ExpressionVisitor<I, O, E> visitor, @NotNull I input) throws E;
 
+    public static interface Opcode { }
+
     public static class IntLiteral implements Expression {
 
         private int value;
@@ -52,7 +54,7 @@ public interface Expression extends Syntax {
 
     public static class BinOp implements Expression {
 
-        public static enum Type {
+        public static enum Type implements Opcode {
             // Arithmetic
             ADD, SUB, MUL, DIV, MOD,
 
@@ -102,7 +104,7 @@ public interface Expression extends Syntax {
 
     public static class UnOp implements Expression {
 
-        public static enum Type {
+        public static enum Type implements Opcode {
             NOT
         }
 

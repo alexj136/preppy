@@ -2,10 +2,6 @@ package net.alexjeffery.preppy.interpret;
 
 import net.alexjeffery.preppy.syntax.Declaration;
 import net.alexjeffery.preppy.syntax.Expression;
-import net.alexjeffery.preppy.syntax.Statement;
-import net.alexjeffery.preppy.syntax.visitor.DeclarationVisitor;
-import net.alexjeffery.preppy.syntax.visitor.ExpressionVisitor;
-import net.alexjeffery.preppy.syntax.visitor.StatementVisitor;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.misc.Nullable;
 
