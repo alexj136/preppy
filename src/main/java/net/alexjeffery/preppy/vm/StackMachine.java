@@ -50,7 +50,7 @@ public class StackMachine implements Machine {
     private void doJump(@NotNull String labelName) throws StackMachineException {
         Integer jumpTarget = labels.get(labelName);
         if (jumpTarget == null)
-            throw new StackMachineException("Label '" + labelName + "' not found");
+            throw new StackMachineException("Label '" + labelName + "' not found.");
         doJump(jumpTarget);
     }
 
@@ -61,7 +61,7 @@ public class StackMachine implements Machine {
     public void step() throws StackMachineException {
 
         if (programCounter >= program.size())
-            throw new StackMachineException("Program counter out of bounds");
+            throw new StackMachineException("Program counter out of bounds.");
 
         StackMachineInstruction instruction = program.get(programCounter);
 
@@ -122,7 +122,7 @@ public class StackMachine implements Machine {
             doJump(pop());
 
         } else {
-            throw new StackMachineException("Unsupported instruction type");
+            throw new StackMachineException("Unsupported instruction type '" + instruction.getClass().getName() + "'.");
         }
     }
 

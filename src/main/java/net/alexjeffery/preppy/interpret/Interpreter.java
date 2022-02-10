@@ -22,7 +22,7 @@ public class Interpreter {
     public int run(@NotNull int[] input) throws InterpreterException {
         Declaration main = declarations.get("main");
         if (main == null)
-            throw new InterpreterException("Declaration 'main' not found");
+            throw new InterpreterException("Declaration 'main' not found.");
         List<Expression> arguments = new ArrayList<>(input.length);
         for(int arg : input) {
             arguments.add(new Expression.IntLiteral(arg));
@@ -43,7 +43,7 @@ public class Interpreter {
         for(Declaration declaration : declarationList) {
             String name = declaration.getName();
             if (declarationMap.containsKey(name)) {
-                throw new InterpreterException("Multiple functions with name '" + name + "'");
+                throw new InterpreterException("Multiple functions with name '" + name + "'.");
             }
             declarationMap.put(name, declaration);
         }
@@ -84,7 +84,7 @@ public class Interpreter {
         public Declaration lookupDeclaration(@NotNull String name) throws InterpreterException {
             Declaration declaration = declarations.get(name);
             if (declaration == null)
-                throw new InterpreterException("Declaration '" + name + "' not found");
+                throw new InterpreterException("Declaration '" + name + "' not found.");
             return declaration;
         }
 
@@ -96,7 +96,7 @@ public class Interpreter {
         @NotNull
         public Integer lookupVariable(@NotNull String name) throws InterpreterException {
             if (!store.containsKey(name))
-                throw new InterpreterException("Variable '" + name + "' not found");
+                throw new InterpreterException("Variable '" + name + "' not found.");
             return store.get(name);
         }
     }

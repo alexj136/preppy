@@ -20,7 +20,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Interpreter.Inte
 
     @Override
     public Integer visit(Expression expression, Interpreter.InterpreterScope input) throws Interpreter.InterpreterException {
-        throw new Interpreter.InterpreterException("Unsupported Expression type: " + expression.getClass().getName());
+        throw new Interpreter.InterpreterException("Unsupported Expression type '" + expression.getClass().getName() + "'.");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Interpreter.Inte
             case AND: return (left != 0) && (right != 0) ? 1 : 0;
             case OR: return (left != 0) || (right != 0) ? 1 : 0;
         }
-        throw new Interpreter.InterpreterException("Unsupported BinOp type: " + binOp.getType().name());
+        throw new Interpreter.InterpreterException("Unsupported BinOp type '" + binOp.getType().name() + "'.");
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Interpreter.Inte
         switch(unOp.getType()) {
             case NOT: return argument == 0 ? 1 : 0;
         }
-        throw new Interpreter.InterpreterException("Unsupported UnOp type: " + unOp.getType().name());
+        throw new Interpreter.InterpreterException("Unsupported UnOp type '" + unOp.getType().name() + "'.");
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ExpressionInterpreter implements ExpressionVisitor<Interpreter.Inte
         if (callee.getParameterNames().size() != call.getArguments().size()) {
             throw new Interpreter.InterpreterException("Declaration '" + callee.getName() +
                     "' called with incorrect number of arguments; got " + call.getArguments().size() +
-                    ", expected " + callee.getParameterNames().size());
+                    ", expected " + callee.getParameterNames().size() + ".");
         }
         Interpreter.InterpreterScope child = input.child();
         for (int i = 0; i < call.getArguments().size(); i++) {

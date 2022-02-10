@@ -3,7 +3,7 @@ package net.alexjeffery.preppy.vm;
 import net.alexjeffery.preppy.syntax.Expression;
 import org.antlr.v4.runtime.misc.NotNull;
 
-public interface StackMachineInstruction {
+public interface StackMachineInstruction extends MachineInstruction<StackMachine> {
 
     public static class OpcodeInstruction implements StackMachineInstruction {
 

@@ -75,7 +75,7 @@ public class ExamplesTest {
         PreppyParser parser = new PreppyParser(tokens);
         List<Declaration> decls = parser.declarations().out;
         if (decls == null)
-            throw new IOException("parser returned null");
+            throw new IOException("Parser returned null.");
         return decls;
     }
 

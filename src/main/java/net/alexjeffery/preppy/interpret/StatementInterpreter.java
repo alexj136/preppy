@@ -19,7 +19,7 @@ public class StatementInterpreter implements StatementVisitor<Interpreter.Interp
 
     @Override
     public Boolean visit(Statement statement, Interpreter.InterpreterScope input) throws Interpreter.InterpreterException {
-        throw new Interpreter.InterpreterException("Unsupported Statement type: " + statement.getClass().getName());
+        throw new Interpreter.InterpreterException("Unsupported Statement type '" + statement.getClass().getName() + "'.");
     }
 
     @Override
