@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.alexjeffery.preppy.interpret.Interpreter.InterpreterException;
+import static net.alexjeffery.preppy.syntax.Syntax.SyntaxException;
+
 public class ExamplesTest {
 
     public static final List<Declaration> FIBONACCI = List.of(
@@ -44,7 +47,7 @@ public class ExamplesTest {
     );
 
     @Test
-    public void testInterpreterReturnValueFibonacci() throws Interpreter.InterpreterException {
+    public void testInterpreterReturnValueFibonacci() throws InterpreterException, SyntaxException {
         Interpreter interpreter = new Interpreter(FIBONACCI);
         Assertions.assertEquals(interpreter.run(new int[] { 1 }), 1);
         Assertions.assertEquals(interpreter.run(new int[] { 2 }), 2);

@@ -10,13 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.alexjeffery.preppy.syntax.Syntax.SyntaxException;
+
 public class Interpreter {
 
     @NotNull
     private Map<String, Declaration> declarations;
 
-    public Interpreter(@NotNull List<Declaration> declarations) throws InterpreterException {
-        this.declarations = mapDeclarations(declarations);
+    public Interpreter(@NotNull List<Declaration> declarations) throws InterpreterException, SyntaxException {
+        this.declarations = Declaration.listToMap(declarations);
     }
 
     public int run(@NotNull int[] input) throws InterpreterException {
@@ -35,19 +37,6 @@ public class Interpreter {
         public InterpreterException(@NotNull String message) {
             super(message);
         }
-    }
-
-    @NotNull
-    public static Map<String, Declaration> mapDeclarations(@NotNull List<Declaration> declarationList) throws InterpreterException {
-        Map<String, Declaration> declarationMap = new HashMap<>();
-        for(Declaration declaration : declarationList) {
-            String name = declaration.getName();
-            if (declarationMap.containsKey(name)) {
-                throw new InterpreterException("Multiple functions with name '" + name + "'.");
-            }
-            declarationMap.put(name, declaration);
-        }
-        return declarationMap;
     }
 
     public static class InterpreterScope {
@@ -89,15 +78,25 @@ public class Interpreter {
         }
 
         @NotNull
-        public void putVariable(@NotNull String name, @NotNull Integer value) {
+        public void putVariable(@NotNull String name, @NotNull Integer value) throws InterpreterException {
+            if(!variableIsDefined(name))
+                variableNotFound(name);
             store.put(name, value);
+        }
+
+        public boolean variableIsDefined(@NotNull String name) {
+            return store.containsKey(name);
         }
 
         @NotNull
         public Integer lookupVariable(@NotNull String name) throws InterpreterException {
-            if (!store.containsKey(name))
-                throw new InterpreterException("Variable '" + name + "' not found.");
+            if (!variableIsDefined(name))
+                variableNotFound(name);
             return store.get(name);
+        }
+
+        public void variableNotFound(@NotNull String name) throws InterpreterException {
+            throw new InterpreterException("Variable '" + name + "' not found.");
         }
     }
 

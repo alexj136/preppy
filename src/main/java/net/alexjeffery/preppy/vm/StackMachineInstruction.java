@@ -3,6 +3,8 @@ package net.alexjeffery.preppy.vm;
 import net.alexjeffery.preppy.syntax.Expression;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import static net.alexjeffery.preppy.syntax.Expression.Opcode;
+
 public interface StackMachineInstruction extends MachineInstruction<StackMachine> {
 
     public static class OpcodeInstruction implements StackMachineInstruction {
@@ -10,7 +12,7 @@ public interface StackMachineInstruction extends MachineInstruction<StackMachine
         @NotNull
         private Expression.Opcode opcode;
 
-        public OpcodeInstruction(@NotNull Expression.Opcode opcode) {
+        public OpcodeInstruction(@NotNull Opcode opcode) {
             this.opcode = opcode;
         }
 
@@ -96,5 +98,30 @@ public interface StackMachineInstruction extends MachineInstruction<StackMachine
     public static class JumpAddr implements StackMachineInstruction {
 
         public JumpAddr() { }
+    }
+
+    public static class Copy implements StackMachineInstruction {
+
+        // The value on top of the stack is a reference somewhere else in the stack.
+        // Copy the value from the referenced point on the stack to the top of the stack, popping the reference first.
+        public Copy() { }
+    }
+
+    public static class Save implements StackMachineInstruction {
+
+        // Save the value on top of the stack into the stack reference underneath the value. Pop both of them.
+        public Save() { }
+    }
+
+    public static class PushFramePointer implements StackMachineInstruction {
+
+        // Push the current frame pointer on the stack
+        public PushFramePointer() { }
+    }
+
+    public static class SetFramePointer implements StackMachineInstruction {
+
+        // Set the frame pointer to point to the current stack size (i.e. address of top stack element + 1)
+        public SetFramePointer() { }
     }
 }

@@ -22,12 +22,16 @@ public class StackMachine implements Machine {
     private Integer programCounter;
 
     @NotNull
+    private Integer framePointer;
+
+    @NotNull
     private Map<String, Integer> labels;
 
     public StackMachine(List<StackMachineInstruction> program) {
         this.program = program;
         this.stack = new ArrayList<>();
         this.programCounter = 0;
+        this.framePointer = 0;
         this.labels = new HashMap<>();
         for(int i = 0; i < program.size(); i++) {
             StackMachineInstruction instruction = program.get(i);
@@ -120,6 +124,25 @@ public class StackMachine implements Machine {
 
         } else if (instruction instanceof JumpAddr) {
             doJump(pop());
+
+        } else if (instruction instanceof Copy) {
+            Integer address = pop();
+            if (address < 0 || address >= stack.size())
+                throw new StackMachineException("Copy reference out of bounds.");
+            push(stack.get(address));
+
+        } else if (instruction instanceof Save) {
+            Integer value = pop();
+            Integer address = pop();
+            if (address < 0 || address >= stack.size())
+                throw new StackMachineException("Save reference out of bounds.");
+            stack.set(address, value);
+
+        } else if (instruction instanceof PushFramePointer) {
+            push(framePointer);
+
+        } else if (instruction instanceof SetFramePointer) {
+            framePointer = stack.size();
 
         } else {
             throw new StackMachineException("Unsupported instruction type '" + instruction.getClass().getName() + "'.");
