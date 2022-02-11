@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static net.alexjeffery.preppy.syntax.Expression.*;
-import static net.alexjeffery.preppy.syntax.Expression.BinOp.Type.ADD;
+import static net.alexjeffery.preppy.syntax.Expression.BinOp.Type.SUB;
 import static net.alexjeffery.preppy.syntax.Statement.*;
 import static net.alexjeffery.preppy.vm.StackMachineInstruction.*;
 
@@ -71,12 +71,18 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
         }
     }
 
+    @NotNull
+    private static String entryLabelName(@NotNull String functionName) {
+        return "ENTRY_" + functionName;
+    }
+
     public static class CodeGenException extends Exception {
 
         public CodeGenException(@NotNull String message) {
             super(message);
         }
     }
+
 
     public static class GenExpression implements ExpressionVisitor<CodeGenContext, Void, CodeGenException> {
 
@@ -97,10 +103,10 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
 
         @Override
         public Void visit(@NotNull Variable variable, @NotNull CodeGenContext context) throws CodeGenException {
-            Integer offset = context.getVariableOffset(variable.getName()) + 2;
+            Integer offset = context.getVariableOffset(variable.getName());
             context.appendInstruction(new PushFramePointer());
-            context.appendInstruction(new PushImm(2));
-            context.appendInstruction(new OpcodeInstruction(ADD));
+            context.appendInstruction(new PushImm(offset));
+            context.appendInstruction(new OpcodeInstruction(SUB));
             context.appendInstruction(new Copy());
             return null;
         }
@@ -121,8 +127,22 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
         }
 
         @Override
-        public Void visit(@NotNull Call call, @NotNull CodeGenContext input) throws CodeGenException {
-            throw new RuntimeException("Not yet implemented.");
+        public Void visit(@NotNull Call call, @NotNull CodeGenContext context) throws CodeGenException {
+            String calleeName = call.getName();
+            List<Expression> argumentExpressions = call.getArguments();
+            context.appendInstruction(new PushFramePointer());
+            for(int i = argumentExpressions.size() - 1; i >= 0; i++) {
+                Expression argument = argumentExpressions.get(i);
+                argument.accept(this, context);
+            }
+            context.appendInstruction(new SetFramePointer());
+            context.appendInstruction(new JumpLink(entryLabelName(calleeName)));
+            for(int i = 0; i < argumentExpressions.size(); i++) {
+                context.appendInstruction(new Swap());
+                context.appendInstruction(new Pop());
+            }
+            context.appendInstruction(new Swap());
+            context.appendInstruction(new PopFramePointer());
         }
     }
 
@@ -146,10 +166,10 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
 
         @Override
         public Void visit(Assignment assignment, CodeGenContext context) throws CodeGenException {
-            Integer offset = context.getVariableOffset(assignment.getName()) + 2;
+            Integer offset = context.getVariableOffset(assignment.getName());
             context.appendInstruction(new PushFramePointer());
-            context.appendInstruction(new PushImm(2));
-            context.appendInstruction(new OpcodeInstruction(ADD));
+            context.appendInstruction(new PushImm(offset));
+            context.appendInstruction(new OpcodeInstruction(SUB));
             assignment.getValue().accept(GenExpression.getInstance(), context);
             context.appendInstruction(new Save());
             return null;
@@ -157,16 +177,38 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
 
         @Override
         public Void visit(While _while, CodeGenContext context) throws CodeGenException {
+            String uniqueLabelPart = context.freshLabel();
+            String whileCondLabel = "WHILE_COND_" + uniqueLabelPart;
+            String whileBodyLabel = "WHILE_BODY_" + uniqueLabelPart;
+            context.appendInstruction(new Jump(whileCondLabel));
+            context.appendInstruction(new Label(whileBodyLabel));
+            _while.getBody().accept(this, context);
+            context.appendInstruction(new Label(whileCondLabel));
+            _while.getCondition().accept(GenExpression.getInstance(), context);
+            context.appendInstruction(new JumpIf(whileBodyLabel));
             return null;
         }
 
         @Override
         public Void visit(Return _return, CodeGenContext context) throws CodeGenException {
+            _return.getValue().accept(GenExpression.getInstance(), context);
+            context.appendInstruction(new Swap());
+            context.appendInstruction(new JumpAddr());
             return null;
         }
 
         @Override
         public Void visit(Cond cond, CodeGenContext context) throws CodeGenException {
+            String uniqueLabelPart = context.freshLabel();
+            String ifTrueLabel = "IF_TRUE_" + uniqueLabelPart;
+            String ifEndLabel = "IF_END_" + uniqueLabelPart;
+            cond.getCondition().accept(GenExpression.getInstance(), context);
+            context.appendInstruction(new JumpIf(ifTrueLabel));
+            cond.getFalseBranch().accept(this, context);
+            context.appendInstruction(new Jump(ifEndLabel));
+            context.appendInstruction(new Label(ifTrueLabel));
+            cond.getTrueBranch().accept(this, context);
+            context.appendInstruction(new Label(ifEndLabel));
             return null;
         }
     }

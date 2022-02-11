@@ -95,33 +95,44 @@ public interface StackMachineInstruction extends MachineInstruction<StackMachine
         }
     }
 
-    public static class JumpAddr implements StackMachineInstruction {
+    /**
+     * Jump to the code address on top of the stack, popping it.
+     */
+    public static class JumpAddr implements StackMachineInstruction { }
 
-        public JumpAddr() { }
-    }
+    /**
+     * The value on top of the stack is a reference somewhere else in the stack.
+     * Copy the value from the referenced point on the stack to the top of the stack, popping the reference first.
+     */
+    public static class Copy implements StackMachineInstruction { }
 
-    public static class Copy implements StackMachineInstruction {
+    /**
+     * Save the value on top of the stack into the stack reference underneath the value. Pop both of them.
+     */
+    public static class Save implements StackMachineInstruction { }
 
-        // The value on top of the stack is a reference somewhere else in the stack.
-        // Copy the value from the referenced point on the stack to the top of the stack, popping the reference first.
-        public Copy() { }
-    }
+    /**
+     * Push the current frame pointer on the stack
+     */
+    public static class PushFramePointer implements StackMachineInstruction { }
 
-    public static class Save implements StackMachineInstruction {
+    /**
+     * Pop the stack into the frame pointer.
+     */
+    public static class PopFramePointer implements StackMachineInstruction { }
 
-        // Save the value on top of the stack into the stack reference underneath the value. Pop both of them.
-        public Save() { }
-    }
+    /**
+     * Set the frame pointer to point to the top element of the stack.
+     */
+    public static class SetFramePointer implements StackMachineInstruction { }
 
-    public static class PushFramePointer implements StackMachineInstruction {
+    /**
+     * Swap the two top elements on the stack.
+     */
+    public static class Swap implements StackMachineInstruction { }
 
-        // Push the current frame pointer on the stack
-        public PushFramePointer() { }
-    }
-
-    public static class SetFramePointer implements StackMachineInstruction {
-
-        // Set the frame pointer to point to the current stack size (i.e. address of top stack element + 1)
-        public SetFramePointer() { }
-    }
+    /**
+     * Discard the top element of the stack.
+     */
+    public static class Pop implements StackMachineInstruction { }
 }

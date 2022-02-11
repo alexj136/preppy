@@ -13,7 +13,7 @@ import static net.alexjeffery.preppy.vm.StackMachineInstruction.*;
 public class StackMachine implements Machine {
 
     @NotNull
-    private List<StackMachineInstruction> program;
+    private List<StackMachineInstruction> code;
 
     @NotNull
     private List<Integer> stack;
@@ -27,14 +27,14 @@ public class StackMachine implements Machine {
     @NotNull
     private Map<String, Integer> labels;
 
-    public StackMachine(List<StackMachineInstruction> program) {
-        this.program = program;
+    public StackMachine(List<StackMachineInstruction> code) {
+        this.code = code;
         this.stack = new ArrayList<>();
         this.programCounter = 0;
         this.framePointer = 0;
         this.labels = new HashMap<>();
-        for(int i = 0; i < program.size(); i++) {
-            StackMachineInstruction instruction = program.get(i);
+        for(int i = 0; i < code.size(); i++) {
+            StackMachineInstruction instruction = code.get(i);
             if (instruction instanceof Label) {
                 Label label = (Label) instruction;
                 labels.put(label.getName(), i);
@@ -62,12 +62,17 @@ public class StackMachine implements Machine {
         programCounter = address;
     }
 
+    public void run() throws StackMachineException {
+        while (programCounter >= 0 && programCounter < code.size())
+            step();
+    }
+
     public void step() throws StackMachineException {
 
-        if (programCounter >= program.size())
+        if (programCounter >= code.size())
             throw new StackMachineException("Program counter out of bounds.");
 
-        StackMachineInstruction instruction = program.get(programCounter);
+        StackMachineInstruction instruction = code.get(programCounter);
 
         if (instruction instanceof OpcodeInstruction) {
             OpcodeInstruction opcodeInstruction = (OpcodeInstruction) instruction;
@@ -141,8 +146,20 @@ public class StackMachine implements Machine {
         } else if (instruction instanceof PushFramePointer) {
             push(framePointer);
 
+        } else if (instruction instanceof PopFramePointer) {
+            framePointer = pop();
+
         } else if (instruction instanceof SetFramePointer) {
-            framePointer = stack.size();
+            framePointer = stack.size() - 1;
+
+        } else if (instruction instanceof Swap) {
+            Integer oldTop = pop();
+            Integer newTop = pop();
+            push(oldTop);
+            push(newTop);
+
+        } else if (instruction instanceof Pop) {
+            pop();
 
         } else {
             throw new StackMachineException("Unsupported instruction type '" + instruction.getClass().getName() + "'.");
