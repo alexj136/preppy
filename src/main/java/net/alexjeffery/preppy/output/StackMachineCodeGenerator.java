@@ -19,13 +19,7 @@ import static net.alexjeffery.preppy.syntax.Expression.BinOp.Type.SUB;
 import static net.alexjeffery.preppy.syntax.Statement.*;
 import static net.alexjeffery.preppy.vm.StackMachineInstruction.*;
 
-public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
-
-    @Override
-    @NotNull
-    public List<MachineInstruction<StackMachine>> codeGen(@NotNull List<Declaration> program) {
-        throw new RuntimeException("Not yet implemented.");
-    }
+public class StackMachineCodeGenerator implements CodeGenerator<StackMachine, StackMachineCodeGenerator.CodeGenException> {
 
     public static class CodeGenContext {
 
@@ -42,11 +36,15 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
         private Integer freshName;
 
         @NotNull
-        private List<StackMachineInstruction> instructions;
+        private List<MachineInstruction<StackMachine>> instructions;
 
-        public CodeGenContext(@NotNull List<Declaration> astList) throws SyntaxException {
+        public CodeGenContext(@NotNull List<Declaration> astList) throws CodeGenException {
             this.astList = astList;
-            this.astMap = Declaration.listToMap(astList);
+            try {
+                this.astMap = Declaration.listToMap(astList);
+            } catch (SyntaxException e) {
+                throw new CodeGenException(e.getMessage());
+            }
             this.currentDeclaration = astList.get(0).getName();
             this.freshName = 0;
             this.instructions = new ArrayList<>();
@@ -83,6 +81,20 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
         }
     }
 
+    @Override
+    @NotNull
+    public List<MachineInstruction<StackMachine>> codeGen(@NotNull List<Declaration> program) throws CodeGenException {
+        CodeGenContext context = new CodeGenContext(program);
+        context.appendInstruction(new SetFramePointer());
+        context.appendInstruction(new JumpLink("main"));
+        context.appendInstruction(new Jump("PROG_END"));
+        for(Declaration declaration : program) {
+            context.appendInstruction(new Label(entryLabelName(declaration.getName())));
+            declaration.getBody().accept(GenStatement.getInstance(), context);
+        }
+        context.appendInstruction(new Label("PROG_END"));
+        return context.instructions;
+    }
 
     public static class GenExpression implements ExpressionVisitor<CodeGenContext, Void, CodeGenException> {
 
@@ -143,6 +155,7 @@ public class StackMachineCodeGenerator implements CodeGenerator<StackMachine> {
             }
             context.appendInstruction(new Swap());
             context.appendInstruction(new PopFramePointer());
+            return null;
         }
     }
 

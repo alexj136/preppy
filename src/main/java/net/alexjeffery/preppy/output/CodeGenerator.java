@@ -7,8 +7,8 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 
-public interface CodeGenerator<T extends Machine> {
+public interface CodeGenerator<T extends Machine, E extends Throwable> {
 
     @NotNull
-    public List<MachineInstruction<T>> codeGen(@NotNull List<Declaration> program);
+    public List<MachineInstruction<T>> codeGen(@NotNull List<Declaration> program) throws E;
 }

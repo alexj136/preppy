@@ -1,11 +1,14 @@
 package net.alexjeffery.preppy.test;
 
 import net.alexjeffery.preppy.interpret.Interpreter;
+import net.alexjeffery.preppy.output.StackMachineCodeGenerator;
 import net.alexjeffery.preppy.parser.PreppyLexer;
 import net.alexjeffery.preppy.parser.PreppyParser;
 import net.alexjeffery.preppy.syntax.Declaration;
 import net.alexjeffery.preppy.syntax.Expression;
 import net.alexjeffery.preppy.syntax.Statement;
+import net.alexjeffery.preppy.vm.MachineInstruction;
+import net.alexjeffery.preppy.vm.StackMachine;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -20,6 +23,7 @@ import java.util.Map;
 
 import static net.alexjeffery.preppy.interpret.Interpreter.InterpreterException;
 import static net.alexjeffery.preppy.syntax.Syntax.SyntaxException;
+import static net.alexjeffery.preppy.output.StackMachineCodeGenerator.CodeGenException;
 
 public class ExamplesTest {
 
@@ -56,6 +60,14 @@ public class ExamplesTest {
         Assertions.assertEquals(interpreter.run(new int[] { 5 }), 8);
         Assertions.assertEquals(interpreter.run(new int[] { 6 }), 13);
         Assertions.assertEquals(interpreter.run(new int[] { 7 }), 21);
+    }
+
+    @Test
+    public void testCodeGenReturnValueFibonacci() throws CodeGenException {
+        List<MachineInstruction<StackMachine>> code = new StackMachineCodeGenerator().codeGen(FIBONACCI);
+        for(MachineInstruction<StackMachine> line : code) {
+            System.out.println(line);
+        }
     }
 
     @NotNull
